@@ -14,13 +14,10 @@
 (global-visual-line-mode 1)
 (setq linum-format "%4d \u2502 ")
 (global-linum-mode 1)
-(setq mac-command-modifier 'meta) ; make cmd key do Meta
 (global-set-key (kbd "C-M-n")
      (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "C-M-p")
      (lambda () (interactive) (previous-line 5)))
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(setq molokai-theme-kit t)
 (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
 			                                     "xelatex -interaction nonstopmode %f"))
 (setq org-agenda-files (list "~/Yandex.Disk.localized/org/todo.org"))
@@ -78,32 +75,13 @@
 	      ("h" "Habit" entry (file "~/Yandex.Disk.localized/org/refile.org")
 	       "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 ;; Remove empty LOGBOOK drawers on clock out
-;;set transparent effect
-(global-set-key (kbd "<f11>") 'loop-alpha)
-(setq alpha-list '((100 100) (95 65) (85 55) (75 45) (65 35)))
-(defun loop-alpha ()
-   (interactive)
-   (let ((h (car alpha-list)))                ;; head value will set to
-     ((lambda (a ab)
-        (set-frame-parameter (selected-frame) 'alpha (list a ab))
-        (add-to-list 'default-frame-alist (cons 'alpha (list a ab)))
-        ) (car h) (car (cdr h)))
-     (setq alpha-list (cdr (append alpha-list (list h))))
-     )
- )
 (electric-pair-mode 1)
-;(setq electric-pair-pairs '((?\{ . ?\})))
-;(setq yas/root-directory "~/.emacs.d/snippets")
-;(yas/load-directory "~/.emacs.d/snippets")
 (add-to-list 'load-path
                "~/.emacs.d/plugins/yasnippet")
 (require 'yasnippet)
 (yas-global-mode 1)
-;
 ;; latex-mode
 
-;; (let ((default-directory "/usr/local/share/emacs/site-lisp/"))
-;;(normal-top-level-add-subdirs-to-load-path))
 ;;;;;;;;;;;;;;AUCTex initiating;;;;
 (load "auctex.el" nil t t)
 ;(load "preview-latex.el" nil t t)
@@ -128,38 +106,9 @@
 (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
 (autoload 'cdlatex-mode "cdlatex" "CDLaTeX Mode" t)
 (autoload 'turn-on-cdlatex "cdlatex" "CDLaTeX Mode" nil)
-;(add-hook 'LaTeX-mode-hook 'yas-minor-mode)
-;(add-hook 'cdlatex-tab-hook 'yas-expand)
-;;解决yasnippet和cdlatex的兼容问题，这是目前最完美的解决方法
 
 ; yasnippet
-;
 (yas/initialize)
-;(yas/load-directory "~/.emacs.d/plugins/yasnippet/snippets")
-
-; this breaks things; use the below advise solution instead
-(add-hook 'org-mode-hook
-   (lambda ()
-     (org-set-local 'yas/initialize/trigger-key [tab])
-     (define-key yas/keymap [tab] 'yas/next-field-group)))
-
-; when cdlatex-mode or org-cdlatex-mode are loaded, we need to change
-; the behaviour of yas/fallback to call cdlatex-tab
-
-(defun yas/advise-indent-function (function-symbol)
-  (eval `(defadvice ,function-symbol (around yas/try-expand-first activate)
-             ,(format
-                          "Try to expand a snippet before point, then call `%s' as usual"
-                                       function-symbol)
-                                                  (let ((yas/fallback-behavior nil))
-                                                               (unless (and (interactive-p)
-                                                                                         (yas/expand))
-                                                                                                        ad-do-it)))))
-(yas/advise-indent-function 'cdlatex-tab)
-;(yas/advise-indent-function 'org-cycle)
-;(yas/advise-indent-function 'org-try-cdlatex-tab)
-(add-hook 'org-mode-hook 'yas/minor-mode-on)
-
 
 (add-hook 'outline-minor-mode-hook
 	  (lambda () (local-set-key "\C-c\C-o" outline-mode-prefix-map)))
@@ -215,53 +164,9 @@
 
 (provide 'my-auctex)
 
-;(load "auctex.el" nil t t)
-;(load "preview-latex.el" nil t t)
-;(setq TeX-auto-save t)
-;(setq TeX-parse-self t)
-;(setq-default TeX-master nil)
-;(require 'reftex)
-;(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-;(setq reftex-plug-into-AUCTeX t)
-;(setq reftex-enable-partial-scans t)
-;(setq reftex-save-parse-info t)
-;(setq reftex-use-multiple-selection-buffers t)
-;(setq reftex-toc-split-windows-horizontally t) ;;
-;(setq reftex-toc-split-windows-fraction 0.2)  ;;
-;(autoload 'reftex-mode "reftex" "RefTeX Minor Mode" t)
-;(autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
-;(autoload 'reftex-citation "reftex-cite" "Make citation" nil)
-;(autoload 'reftex-index-phrase-mode "reftex-index" "Phrase mode" t)
-;(add-hook 'LaTeX-mode-hook 
-;          (lambda () 
-;(add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-
-;(setq TeX-command-default "XeLaTeX") ;; XeLaTeX
-;(setq TeX-view-program-selection '((output-pdf "Skim")(output-dvi "Skim")))
-
-;(push '("Latexmk" "latexmk -xelatex %s" TeX-run-TeX nil t
-;      :help "Run Latexmk on file") TeX-command-list)
-
-;;(require 'auto-complete-settings)
-;;(require 'yasnippet-settings)
-;(TeX-fold-mode 1)
-
-;(defun electric-pair()
-;(interactive)
-;(if(eolp)(let (parens-require-spaces)(insert-pair))(self-insert-command l))
-;)
-;(define-key LaTeX-mode-map "{" 'electric-pair)
-;(define-key LaTeX-mode-map "[" 'electric-pair)
-;(define-key LaTeX-mode-map "(" 'electric-pair)
-;(define-key LaTeX-mode-map "\'" 'electric-pair)
-;(define-key LaTeX-mode-map "\"" 'electric-pair)
-;(define-key LaTeX-mode-map "$" 'electric-pair)
-;))
 (add-to-list 'load-path "~/.emacs.d/org-ref-master")
 ;; make sure you have dash, helm, helm-bibtex, ebib, s, f, hydra and key-chord
 ;; in your load-path
-(add-to-list 'load-path "/Users/haibo/.emacs.d/elpa/ess-20151217.544/lisp
- ")
 (require 'ess-site)
 (require 'org-ref)
 
@@ -303,24 +208,6 @@
 (add-to-list 'ac-modes 'latex-mode)
 (add-to-list 'ac-modes 'org-mode)
 (ac-config-default)
-;(defun ac-latex-mode-setup()
-;  (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
-;(add-hook 'latex-mode-hook 'ac-latex-mode-setup)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("c3c0a3702e1d6c0373a0f6a557788dfd49ec9e66e753fb24493579859c8e95ab" default)))
- '(org-agenda-files (quote ("~/Yandex.Disk.localized/org/todo.org"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (setq auto-mode-alist
       ;; 将文件模式和文件后缀关联起来
       (append '(("\\.py\\'" . python-mode)
