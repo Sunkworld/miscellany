@@ -18,6 +18,10 @@
      (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "C-M-p")
      (lambda () (interactive) (previous-line 5)))
+;;jedi
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
+;;
 (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
 			                                     "xelatex -interaction nonstopmode %f"))
 (setq org-agenda-files (list "~/Yandex.Disk.localized/org/todo.org"))
