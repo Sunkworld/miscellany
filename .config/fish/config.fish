@@ -2,10 +2,14 @@
 set fish_plugins brew osx
 
 set -gx OMF_PATH "/Users/Yuuko/.local/share/omf"
-set -gx PATH $PATH /usr/local/Cellar/dos2unix/7.3/bin /Applications/script /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /Library/Frameworks/Python.framework/Versions/2.7/bin /Library/Frameworks/Python.framework/Versions/Current/bin /Applications/script /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /Library/Frameworks/Python.framework/Versions/2.7/bin /Library/Frameworks/Python.framework/Versions/Current/bin /usr/local/bin /usr/bin /bin /usr/sbin /sbin /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /opt/X11/bin /usr/texbin /Applications/MATLAB_R2014b.app/bin/ /Applications/MATLAB_R2014b.app/bin/ /opt/local/bin /opt/local/sbin /opt/local/share/man /usr/local/cuda/bin
+set -gx PATH $PATH /usr/local/Cellar/dos2unix/7.3/bin /Applications/script /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /Library/Frameworks/Python.framework/Versions/2.7/bin /Library/Frameworks/Python.framework/Versions/Current/bin /Applications/script /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /Library/Frameworks/Python.framework/Versions/2.7/bin /Library/Frameworks/Python.framework/Versions/Current/bin /usr/local/bin /usr/bin /bin /usr/sbin /sbin /Library/TeX/Distributions/.DefaultTeX/Contents/Programs/texbin /opt/X11/bin /usr/texbin /Applications/MATLAB_R2014b.app/bin/ /Applications/MATLAB_R2014b.app/bin/ /opt/local/bin /opt/local/sbin /opt/local/share/man /usr/local/cuda/bin export ~/anaconda2/bin
+set -gx PATH /Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin $PATH
+set -gx LANG en_US.UTF-8
+set -gx LC_ALL en_US.UTF-8
 
-set -gx LDFLAGS -L/usr/local/opt/curl/lib $LDFLAGS
-set -gx CPPFLAGS -I/usr/local/opt/curl/include $CPPFLAGS
+set -gx ALL_PROXY 'socks5://127.0.0.1:1080'
+set -gx LDFLAGS -L/usr/local/opt/curl/lib -L/usr/local/opt/openssl/lib $LDFLAGS
+set -gx CPPFLAGS -I/usr/local/opt/curl/include -I/usr/local/opt/openssl/include $CPPFLAGS
 #source /usr/local/amber14/amber.fsh
 set -gx CUDA_HOME /usr/local/cuda
 
@@ -33,16 +37,18 @@ set -gx DYLD_LIBRARY_PATH /usr/local/cuda/lib $DYLD_LIBRARY_PATH
 
 alias matlab 'matlab -nodesktop'
 alias em 'open -a Emacs'
+#alias vi 'emacsclient -t'
 alias me 'emacs'
+alias ec 'emacsclient -c'
 alias txt 'open -a TextEdit'
 alias pwdc 'pwd | pbcopy'
 alias gvim '/Applications/MacVim.app/Contents/MacOS/Vim -g';
-set szak 'http://music.163.com/\#/my/m/music/playlist\?id\=155129377'
-set nagi 'http://music.163.com/\#/my/m/music/playlist\?id\=33796324'
-set you 'http://music.163.com/\#/my/m/music/playlist\?id\=78894881'
-set gal1 'http://music.163.com/#/my/m/music/playlist?id=112513428'
-set gal2 'http://music.163.com/#/my/m/music/playlist?id=150032455'
-set onna 'http://music.163.com/#/my/m/music/playlist?id=141036418'
+set szak 'http://music.163.com/playlist?id=155129377'
+set nagi 'http://music.163.com/playlist\?id\=33796324'
+set you 'http://music.163.com/playlist\?id\=78894881'
+set gal1 'http://music.163.com/playlist?id=112513428'
+set gal2 'http://music.163.com/playlist?id=150032455'
+set onna 'http://music.163.com/playlist?id=141036418'
 alias play 'python /Applications/script/iScript-master/music.163.com.py -p'
 
 [ -f /usr/local/share/autojump/autojump.fish ]; and . /usr/local/share/autojump/autojump.fish
@@ -60,3 +66,5 @@ function pwdc
 end
 # Load oh-my-fish configuration.
 source $OMF_PATH/init.fish
+
+test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
