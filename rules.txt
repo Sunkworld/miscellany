@@ -2512,7 +2512,7 @@ function FindProxyForURL(url, host) {
             return direct;
         }
     }
-    if isPlainHostName(host) {
+    if (isPlainHostName(host)) {
         return direct;
     }
     return proxy;
