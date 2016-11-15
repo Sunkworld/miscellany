@@ -2508,7 +2508,7 @@ var rules = [
 
 function FindProxyForURL(url, host) {
     for (var i = 0; i < rules.length; i++) {
-        if (isInNet(host, rules[i][0], rules[i][1])) {
+        if (isInNet(host, rules[i][0], rules[i][1]) || isPlainHostName(localhost)) {
             return direct;
         }
     }
