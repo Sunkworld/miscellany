@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     vimscript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -45,7 +46,10 @@ values."
      markdown
      org
      python
-     fortran
+     c-c++
+     ;; pdf-tools
+     ;; (c-c++ :variables c-c++-enable-clang-support t)
+;     fortran
      shell-scripts
      semantic
      chinese
@@ -56,6 +60,9 @@ values."
      shell-default-position 'bottom)
      spell-checking
      syntax-checking
+     ;; cscope
+     gtags
+     irony
      personal
      themes-megapack
      ;; version-control
@@ -64,7 +71,10 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      yasnippet-snippets
+                                      netease-music
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -236,14 +246,14 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup t
+   dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -310,6 +320,17 @@ values."
    ))
 
 (defun dotspacemacs/user-init ()
+;(setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+;                              "xelatex -interaction nonstopmode %f"))
+;; (add-to-list 'org-latex-packages-alist '("" "minted"))
+;; (setq org-latex-listings 'minted)
+  (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+  (server-start)
+  (setq debug-on-error t)
+  (setq explicit-shell-file-name "/bin/bash")
+  (setq shell-file-name "bash")
+  (setq yas-snippet-dirs nil)
+
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init', before layer configuration
 executes.
@@ -319,6 +340,22 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun dotspacemacs/user-config ()
+  (setq load-prefer-newer t)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'super)
+  (setq org-confirm-elisp-link-function nil)
+  (defun add-company-yas ()
+    (add-to-list
+     'company-backends '(company-irony-c-headers company-irony company-yasnippet)))
+  (add-hook 'c++-mode-hook #'add-company-yas)
+  (add-hook 'c-mode-hook #'add-company-yas)
+  
+  (require 'netease-music)
+  (setq netease-music-username "18810660727")
+  (setq netease-music-user-password "trumpet")
+  (setq netease-music-user-id "53547823")
+
+  (setq netease-music-api "http://localhost:3000")
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration.
@@ -384,13 +421,25 @@ you should place your code here."
      ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
      ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
      ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
+ '(company-clang-arguments (quote ("-std=c++11" "-I/usr/local/include/eigen3")))
+ '(company-clang-executable "/usr/local/bin/clang++-3.7")
+ '(company-clang-insert-arguments t)
+ '(company-clang-prefix-guesser (quote company-mode/more-than-prefix-guesser))
  '(custom-safe-themes
    (quote
-    ("d8f76414f8f2dcb045a37eb155bfaa2e1d17b6573ed43fb1d18b936febc7bbc2" "66132890ee1f884b4f8e901f0c61c5ed078809626a547dbefbb201f900d03fd8" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "67e998c3c23fe24ed0fb92b9de75011b92f35d3e89344157ae0d544d50a63a72" default)))
+    ("04232a0bfc50eac64c12471607090ecac9d7fd2d79e388f8543d1c5439ed81f5" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "cd7ffd461946d2a644af8013d529870ea0761dccec33ac5c51a7aaeadec861c2" "1a1cdd9b407ceb299b73e4afd1b63d01bbf2e056ec47a9d95901f4198a0d2428" "3a5f04a517096b08b08ef39db6d12bd55c04ed3d43b344cf8bd855bde6d3a1ae" "450f3382907de50be905ae8a242ecede05ea9b858a8ed3cc8d1fbdf2d57090af" "8d805143f2c71cfad5207155234089729bb742a1cb67b7f60357fdd952044315" "190a9882bef28d7e944aa610aa68fe1ee34ecea6127239178c7ac848754992df" "d8f76414f8f2dcb045a37eb155bfaa2e1d17b6573ed43fb1d18b936febc7bbc2" "66132890ee1f884b4f8e901f0c61c5ed078809626a547dbefbb201f900d03fd8" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "67e998c3c23fe24ed0fb92b9de75011b92f35d3e89344157ae0d544d50a63a72" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(flycheck-c/c++-clang-executable nil)
+ '(flycheck-clang-args nil)
+ '(flycheck-clang-include-path (quote ("/usr/local/include/eigen3/")))
+ '(flycheck-clang-standard-library nil)
+ '(flycheck-cppcheck-include-path nil)
+ '(flycheck-gcc-include-path (quote ("/usr/local/include/eigen3/")))
+ '(irony-additional-clang-options nil)
+ '(irony-user-dir "/Users/Yuuko/bin/irony/")
  '(package-selected-packages
    (quote
-    (insert-shebang fish-mode company-shell powerline spinner alert log4e gntp org-plus-contrib markdown-mode parent-mode projectile gitignore-mode flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg highlight ein skewer-mode deferred request websocket js2-mode simple-httpd diminish company chinese-pyim-basedict pos-tip bind-map bind-key yasnippet packed auctex anaconda-mode pythonic f dash s pinyinlib helm-core async auto-complete popup undo-tree helm avy hydra zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme define-word yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org stickyfunc-enhance srefactor spaceline smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el pbcopy paradox pangu-spacing osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum live-py-mode linum-relative link-hint launchctl info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump cython-mode company-statistics company-auctex company-anaconda column-enforce-mode clean-aindent-mode chinese-pyim auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk aggressive-indent adaptive-wrap ace-window ace-pinyin ace-link ace-jump-helm-line ac-ispell))))
+    (lv parent-mode flx transient anzu polymode request diminish bind-map pkg-info popup netease-music names helm-gtags ggtags rtags helm-cscope xcscope yasnippet-snippets flycheck-irony irony-eldoc company-irony-c-headers company-irony irony flycheck-ycmd company-ycmd ycmd disaster company-c-headers cmake-mode clang-format flycheck-julia julia-repl julia-mode tablist pdf-tools latex-preview-pane log4e gntp pos-tip auto-complete powerline org-category-capture alert org-plus-contrib markdown-mode dash-functional projectile flyspell-correct flycheck epl magit magit-popup git-commit ghub with-editor iedit ein skewer-mode request-deferred websocket deferred js2-mode simple-httpd bind-key packed anaconda-mode pythonic f pinyinlib auctex company smartparens highlight dash evil goto-chg yasnippet gitignore-mode helm-core async s white-sand-theme rebecca-theme pyim pyim-basedict org-mime exotica-theme vimrc-mode dactyl-mode insert-shebang fish-mode company-shell undo-tree helm avy hydra zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme define-word yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org stickyfunc-enhance srefactor spaceline smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el pbcopy paradox pangu-spacing osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum live-py-mode linum-relative link-hint launchctl info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump cython-mode company-statistics company-auctex company-anaconda column-enforce-mode clean-aindent-mode chinese-pyim auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk aggressive-indent adaptive-wrap ace-window ace-pinyin ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
